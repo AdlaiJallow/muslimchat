@@ -57,7 +57,7 @@ export function AdminPanel({ initialDocuments }: { initialDocuments: DocumentRow
   }, [busy, load]);
 
   const ingest = (id: string) =>
-    api<{ chunks: number; pages: number }>("/api/admin/ingest", {
+    api<{ chunks: number; pages: number; ocrPages: number }>("/api/admin/ingest", {
       method: "POST",
       body: JSON.stringify({ id }),
     });
@@ -94,7 +94,8 @@ export function AdminPanel({ initialDocuments }: { initialDocuments: DocumentRow
     for (const id of ids) {
       try {
         const r = await ingest(id);
-        setMessage({ kind: "ok", text: `Indexed ${r.pages} pages into ${r.chunks} passages.` });
+        const ocr = r.ocrPages ? ` (${r.ocrPages} scanned pages read with OCR)` : "";
+        setMessage({ kind: "ok", text: `Indexed ${r.pages} pages into ${r.chunks} passages${ocr}.` });
       } catch (err) {
         setMessage({ kind: "error", text: (err as Error).message });
       }

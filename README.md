@@ -9,6 +9,7 @@ Everything runs on free tiers or open-source models:
 | App | Next.js 16 (App Router), Tailwind |
 | Database, auth, file storage | Supabase (Postgres + pgvector, Storage) |
 | Embeddings | `multilingual-e5-small`, run locally on the CPU (no key) |
+| OCR for scanned PDFs | Tesseract (tesseract.js), run locally, English + Arabic |
 | LLM | Groq free tier (open-weight gpt-oss-120b) through the OpenAI-compatible API, so any compatible endpoint can be swapped in |
 
 ## How it works
@@ -61,6 +62,6 @@ Change only the `LLM_*` variables. Examples:
 
 ## Known limits
 
-- Scanned (image-only) PDFs have no extractable text and fail with a clear error. OCR isn't implemented yet.
+- Scanned pages are read with OCR (Tesseract, run locally; about 5–20 s per page on a CPU). `OCR_LANGS` sets the languages, `eng+ara` by default. For a book that's only in Arabic, `OCR_LANGS=ara` avoids Arabic words being misread as Latin letters. OCR text is never perfect, so check answers against the cited page.
 - Indexing runs inside the request on the server CPU. A large PDF can take a few minutes, so keep the admin tab open until it finishes.
 - Groq's free tier is rate-limited (tokens per minute). Heavy concurrent use returns a "please wait" message.

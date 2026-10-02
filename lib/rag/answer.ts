@@ -1,3 +1,4 @@
+import { citedNumbers } from "@/lib/rag/citations";
 import { answerModel, fastModel, getLlm, normalizeCitations, reasoningParams } from "@/lib/rag/llm";
 import {
   buildAnswerMessages,
@@ -49,7 +50,4 @@ export async function answerOnce(history: HistoryMessage[], question: string) {
   return { ...prepared, answer: normalizeCitations(res.choices[0]?.message?.content ?? "") };
 }
 
-/** Citation numbers actually used in an answer, e.g. "[1][3]" → [1, 3]. */
-export function citedNumbers(answer: string): number[] {
-  return [...new Set([...answer.matchAll(/\[(\d+)\]/g)].map((m) => Number(m[1])))];
-}
+export { citedNumbers };

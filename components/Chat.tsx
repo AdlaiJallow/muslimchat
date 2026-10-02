@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
+import { CITATION_PATTERN, citedNumbers } from "@/lib/rag/citations";
 import type { Citation } from "@/lib/rag/prompt";
 
 export interface ChatMessage {
@@ -32,21 +33,17 @@ function pageLabel(c: Citation) {
   return c.pageStart === c.pageEnd ? `p. ${c.pageStart}` : `pp. ${c.pageStart}–${c.pageEnd}`;
 }
 
-function citedNumbers(text: string) {
-  return new Set([...text.matchAll(/\[(\d+)\]/g)].map((m) => Number(m[1])));
-}
-
-/** Turns "[2]" markers into links to the cited PDF page. */
+/** Turns "[2]" (or "[2†p.3]") markers into links to the cited PDF page. */
 function linkCitations(text: string, citations: Citation[]) {
   const byN = new Map(citations.map((c) => [c.n, c]));
-  return text.replace(/\[(\d+)\](?!\()/g, (match, n) => {
+  return text.replace(CITATION_PATTERN, (match, n) => {
     const c = byN.get(Number(n));
     return c ? `[${n}](${sourceHref(c)} "${c.title.replace(/"/g, "'")}, ${pageLabel(c)}")` : match;
   });
 }
 
 function AssistantMessage({ message, streaming }: { message: ChatMessage; streaming: boolean }) {
-  const used = citedNumbers(message.content);
+  const used = new Set(citedNumbers(message.content));
   const sources = message.citations.filter((c) => used.has(c.n));
 
   return (

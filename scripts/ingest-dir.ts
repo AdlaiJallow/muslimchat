@@ -65,7 +65,8 @@ async function main() {
     const started = Date.now();
     try {
       const r = await ingestDocument(id);
-      console.log(`✓ ${filename}: ${r.pages} pages → ${r.chunks} passages (${((Date.now() - started) / 1000).toFixed(1)}s)`);
+      const ocr = r.ocrPages ? `, ${r.ocrPages} via OCR` : "";
+      console.log(`✓ ${filename}: ${r.pages} pages${ocr} → ${r.chunks} passages (${((Date.now() - started) / 1000).toFixed(1)}s)`);
     } catch (err) {
       console.error(`✗ ${filename}: ${(err as Error).message}`);
     }
