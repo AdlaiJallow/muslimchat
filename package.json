@@ -9,10 +9,10 @@
     "lint": "eslint",
     "ingest": "tsx scripts/ingest-dir.ts",
     "eval": "tsx scripts/eval.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "reembed": "tsx scripts/reembed.ts"
   },
   "dependencies": {
-    "@huggingface/transformers": "^4.3.0",
     "@napi-rs/canvas": "^1.0.10",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",

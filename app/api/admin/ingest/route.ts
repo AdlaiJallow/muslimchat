@@ -2,8 +2,9 @@ import { getAdmin } from "@/lib/auth";
 import { ingestDocument } from "@/lib/rag/ingest";
 
 export const runtime = "nodejs";
-// Embedding runs on the server CPU; large PDFs can take minutes.
-export const maxDuration = 800;
+// OCR runs on the server CPU; large scanned PDFs can take minutes. 300 s is the most
+// Vercel's free plan allows, so load big scans with `npm run ingest` instead.
+export const maxDuration = 300;
 
 /** (Re)indexes a stored document. Also used for "re-index" in the admin page. */
 export async function POST(request: Request) {

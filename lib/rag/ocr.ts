@@ -1,4 +1,5 @@
 import { mkdir } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { createWorker } from "tesseract.js";
 import { renderPageAsImage } from "unpdf";
@@ -18,7 +19,7 @@ export function needsOcr(pageText: string): boolean {
 
 /**
  * OCRs the given 1-based page numbers with Tesseract (runs locally; language data is
- * downloaded once into .cache/tesseract). OCR_LANGS uses Tesseract codes, e.g. "eng+ara".
+ * downloaded once into .cache/tesseract, or /tmp on Vercel). OCR_LANGS uses Tesseract codes, e.g. "eng+ara".
  */
 export async function ocrPages(
   pdf: Uint8Array,
@@ -27,7 +28,8 @@ export async function ocrPages(
 ): Promise<Map<number, string>> {
   const langs = (process.env.OCR_LANGS || "eng+ara").split("+");
   // Tesseract writes downloaded language data here but won't create the folder itself.
-  const cachePath = path.join(process.cwd(), ".cache", "tesseract");
+  // On Vercel only /tmp is writable.
+  const cachePath = path.join(process.env.VERCEL ? os.tmpdir() : process.cwd(), ".cache", "tesseract");
   await mkdir(cachePath, { recursive: true });
   const worker = await createWorker(langs, 1, { cachePath });
   const results = new Map<number, string>();

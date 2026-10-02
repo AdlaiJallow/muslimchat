@@ -1,39 +1,57 @@
-import { env, pipeline, type FeatureExtractionPipeline } from "@huggingface/transformers";
-import path from "node:path";
+import OpenAI from "openai";
 
-/** Embedding dimension of multilingual-e5-small; must match vector(384) in the schema. */
-export const EMBEDDING_DIMENSIONS = 384;
+/**
+ * Embedding dimension of the configured model; must match vector(n) in the schema.
+ * bge-m3 returns 1024.
+ */
+export const EMBEDDING_DIMENSIONS = Number(process.env.EMBEDDING_DIMENSIONS || 1024);
 
-env.cacheDir = path.join(process.cwd(), ".cache", "models");
+let client: OpenAI | undefined;
 
-let extractor: Promise<FeatureExtractionPipeline> | undefined;
-
-function getExtractor() {
-  extractor ??= pipeline(
-    "feature-extraction",
-    process.env.EMBEDDING_MODEL || "Xenova/multilingual-e5-small",
-    { dtype: "q8" },
-  ) as Promise<FeatureExtractionPipeline>;
-  return extractor;
+/**
+ * Client for any OpenAI-compatible embeddings endpoint. Defaults target Cloudflare Workers AI
+ * (free daily allowance), whose base URL includes the account ID.
+ */
+function getClient(): OpenAI {
+  if (!client) {
+    const apiKey = process.env.EMBEDDING_API_KEY;
+    const baseURL = process.env.EMBEDDING_BASE_URL;
+    if (!apiKey || apiKey.endsWith("...") || !baseURL || baseURL.includes("<")) {
+      throw new Error("EMBEDDING_BASE_URL and EMBEDDING_API_KEY must be set");
+    }
+    client = new OpenAI({ apiKey, baseURL });
+  }
+  return client;
 }
 
 async function embed(texts: string[]): Promise<number[][]> {
-  const model = await getExtractor();
-  const output = await model(texts, { pooling: "mean", normalize: true });
-  return output.tolist() as number[][];
+  const response = await getClient().embeddings.create({
+    model: process.env.EMBEDDING_MODEL || "@cf/baai/bge-m3",
+    input: texts,
+  });
+  const vectors = response.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);
+  if (vectors[0]?.length !== EMBEDDING_DIMENSIONS) {
+    throw new Error(
+      `Embedding model returned ${vectors[0]?.length} dimensions; expected ${EMBEDDING_DIMENSIONS}`,
+    );
+  }
+  return vectors;
 }
 
-/** E5 models expect "passage: " / "query: " prefixes. */
-export async function embedPassages(texts: string[], batchSize = 16): Promise<number[][]> {
+export async function embedPassages(texts: string[], batchSize = 32): Promise<number[][]> {
   const vectors: number[][] = [];
   for (let i = 0; i < texts.length; i += batchSize) {
-    const batch = texts.slice(i, i + batchSize).map((t) => `passage: ${t}`);
-    vectors.push(...(await embed(batch)));
+    vectors.push(...(await embed(texts.slice(i, i + batchSize))));
   }
   return vectors;
 }
 
 export async function embedQuery(text: string): Promise<number[]> {
-  const [vector] = await embed([`query: ${text}`]);
+  const [vector] = await embed([text]);
   return vector;
+}
+
+/** Prefix the section heading so passages deep inside a section keep their context. */
+export function passageText(heading: string | null, content: string): string {
+  return heading && !content.startsWith(heading) ? `${heading}\n${content}` : content;
 }

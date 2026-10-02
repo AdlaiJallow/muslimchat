@@ -1,6 +1,18 @@
 [
-  { "question": "Replace with a question answered by one of your PDFs", "expect": { "title": "part of the document title", "page": 1 } },
+  { "question": "What are the categories of water for purification?", "expect": { "title": "waternajasah", "page": 4 } },
+  { "question": "How do you clean clothes that have blood on them?", "expect": { "title": "waternajasah", "page": 22 } },
+  { "question": "Is it allowed to use gold or silver utensils?", "expect": { "title": "waternajasah", "page": 23 } },
+  { "question": "Where is it disliked to relieve oneself?", "expect": { "title": "waternajasah", "page": 26 } },
+  { "question": "What is the difference between minor and major cleanliness?", "expect": { "title": "Lesson 2", "page": 3 } },
+  { "question": "What are the steps of a complete wudu?", "expect": { "title": "Tahaara", "page": 17 } },
+  { "question": "What breaks wudu?", "expect": { "title": "Tahaara", "page": 20 } },
+  { "question": "When is ghusl required?", "expect": { "title": "Tahaara", "page": 21 } },
+  { "question": "When can I do tayammum instead of wudu?", "expect": { "title": "Tahaara", "page": 25 } },
+  { "question": "What are the conditions for wiping over socks?", "expect": { "title": "Tahaara", "page": 29 } },
+  { "question": "What is istihaadha and does it stop prayer?", "expect": { "title": "Tahaara", "page": 32 } },
   { "question": "Who won the 2022 FIFA World Cup?" },
   { "question": "What is the capital of Australia?" },
-  { "question": "Write me a Python function to sort a list." }
+  { "question": "Write me a Python function to sort a list." },
+  { "question": "How do I bake sourdough bread?" },
+  { "question": "What are the rules of zakat on gold?" }
 ]

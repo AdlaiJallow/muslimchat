@@ -1,6 +1,6 @@
 import { createAdminClient, DOCUMENTS_BUCKET } from "@/lib/supabase/admin";
 import { chunkPages } from "@/lib/rag/chunk";
-import { embedPassages } from "@/lib/rag/embed";
+import { embedPassages, passageText } from "@/lib/rag/embed";
 import { needsOcr, ocrPages } from "@/lib/rag/ocr";
 import { parsePdf } from "@/lib/rag/parse";
 
@@ -52,12 +52,7 @@ export async function ingestDocument(
       throw new Error("No text found, even after OCR. The PDF may be blank or the scan unreadable.");
     }
 
-    // Prefix the section heading so passages deep inside a section keep their context.
-    const embeddings = await embedPassages(
-      chunks.map((c) =>
-        c.heading && !c.content.startsWith(c.heading) ? `${c.heading}\n${c.content}` : c.content,
-      ),
-    );
+    const embeddings = await embedPassages(chunks.map((c) => passageText(c.heading, c.content)));
 
     const { error: delError } = await db.from("chunks").delete().eq("document_id", documentId);
     if (delError) throw new Error(`Clearing old chunks failed: ${delError.message}`);
