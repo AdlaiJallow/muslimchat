@@ -1,3 +1,13 @@
+---
+title: Library Assistant
+emoji: 📚
+colorFrom: green
+colorTo: gray
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # Library Assistant
 
 A ChatGPT-style assistant that answers **only** from a curated set of PDFs. Only the administrator can add or remove documents. Every answer cites the document and page it came from, and when the library doesn't cover a question the assistant says so.
@@ -38,6 +48,24 @@ Everything runs on free tiers or open-source models:
    The first run downloads the embedding model (about 130 MB) into `.cache/models`.
 
 The database schema is in `supabase/migrations/0001_init.sql` and has already been applied to the `muslimChat` Supabase project.
+
+## Deploying (Hugging Face Spaces)
+
+The `Dockerfile` builds a production image that listens on port 7860. The block at the top of this README configures the Space (`sdk: docker`, `app_port: 7860`).
+
+1. On huggingface.co, choose **New Space**, pick the **Docker** SDK with the blank template, and make it public. A private Space can only be opened by people signed in to Hugging Face.
+2. In the Space, open **Settings → Variables and secrets** and add every value from `.env.local`:
+   - **Variables:** `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. They must be Variables, because Next.js needs them at build time and Spaces passes only Variables to the build. Add the rest (`LLM_BASE_URL`, `LLM_MODEL`, `LLM_FAST_MODEL`, `LLM_REASONING_EFFORT`, `EMBEDDING_MODEL`, `OCR_LANGS`, `RAG_TOP_K`, `RAG_MIN_SIMILARITY`, `ADMIN_EMAILS`, `ALLOWED_EMAILS`) as Variables too.
+   - **Secrets:** `SUPABASE_SECRET_KEY` and `LLM_API_KEY`.
+3. Push the code. When git asks for a password, use a Hugging Face access token with write permission (Settings → Access Tokens):
+   ```bash
+   git remote add space https://huggingface.co/spaces/<user>/<space>
+   git push space HEAD:main
+   ```
+   The Space builds the image (the embedding model is downloaded into it during the build) and serves the app at `https://<user>-<space>.hf.space`.
+4. In Supabase, open **Authentication → URL Configuration** and set **Site URL** to the Space URL.
+
+Free Spaces sleep after 48 hours without visitors, and the first request after that takes a minute while the Space wakes up. OCR on the free 2-vCPU machine is slow, so you can keep loading large or scanned PDFs from your own machine with `npm run ingest`. It writes to the same Supabase project.
 
 ## Checking answer quality
 
