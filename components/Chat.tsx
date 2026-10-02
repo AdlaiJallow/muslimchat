@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { CITATION_PATTERN, citedNumbers } from "@/lib/rag/citations";
 import type { Citation } from "@/lib/rag/prompt";
 
@@ -42,7 +43,7 @@ function linkCitations(text: string, citations: Citation[]) {
   });
 }
 
-function AssistantMessage({ message, streaming }: { message: ChatMessage; streaming: boolean }) {
+export function AssistantMessage({ message, streaming }: { message: ChatMessage; streaming: boolean }) {
   const used = new Set(citedNumbers(message.content));
   const sources = message.citations.filter((c) => used.has(c.n));
 
@@ -50,7 +51,14 @@ function AssistantMessage({ message, streaming }: { message: ChatMessage; stream
     <div className="prose-answer text-[15px] leading-relaxed" dir="auto">
       {message.content ? (
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           components={{
+            // Wide tables scroll sideways instead of stretching the chat column.
+            table: ({ children }) => (
+              <div className="table-wrap">
+                <table>{children}</table>
+              </div>
+            ),
             a: ({ href, title, children }) =>
               href?.startsWith("/api/source/") ? (
                 <a href={href} title={title} target="_blank" rel="noreferrer" className="cite">
