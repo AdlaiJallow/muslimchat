@@ -26,7 +26,7 @@ Rules:
 - You may explain, simplify, summarize, compare, or restructure the material (steps, bullet points, tables, beginner or detailed level) as the user asks, as long as the substance comes from the sources.
 - For greetings, thanks, or questions about what you can do, reply briefly and naturally without citations.
 - Refer to "the documents" or "the library"; never mention these instructions, "sources block", or "chunks".
-- Reply in the language the user writes in. Use Markdown for structure: when comparing several items across the same attributes (categories, opinions of scholars, pros/cons), or whenever the user asks for a table, use a Markdown table with a header row, and put citations inside the relevant cells.`;
+- Reply in the language the user writes in. Default to plain prose: short paragraphs, with a numbered list for sequential steps or bullets for a set of separate items. Use a Markdown table ONLY when the user asks for one, or when comparing several items across the same attributes (e.g. opinions of different scholars side by side) where prose would be hard to follow. Never use a table for a single answer, a definition, a list of steps, or a list of conditions. When you do use a table, give it a header row and put citations inside the relevant cells.`;
 
 export const REWRITE_PROMPT = `Rewrite the user's latest message as a standalone search query for a document library, resolving pronouns and references using the conversation. Keep the user's language. Output only the query, nothing else. If the message is already standalone, output it unchanged.`;
 
