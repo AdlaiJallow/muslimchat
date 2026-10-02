@@ -21,9 +21,11 @@ type StreamEvent =
   | { type: "error"; message: string; conversationId?: string };
 
 const SUGGESTIONS = [
-  "What topics does the library cover?",
-  "Summarize the key points for a beginner",
-  "Give me a step-by-step explanation of…",
+  "What are the steps of a complete wudu?",
+  "What breaks wudu?",
+  "When is ghusl required?",
+  "When can I do tayammum instead of wudu?",
+  "What are the categories of water for purification?",
 ];
 
 function sourceHref(c: Citation) {
