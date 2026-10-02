@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminPanel, type DocumentRow } from "@/components/AdminPanel";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -21,9 +22,12 @@ export default async function AdminPage() {
             The assistant answers only from documents listed here as <em>ready</em>.
           </p>
         </div>
-        <Link href="/" className="btn-ghost">
-          ← Back to chat
-        </Link>
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <Link href="/" className="btn-ghost">
+            ← Back to chat
+          </Link>
+        </div>
       </div>
       <AdminPanel initialDocuments={(documents ?? []) as DocumentRow[]} />
     </main>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signOut } from "@/app/login/actions";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getUser, isAdminEmail } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,6 +34,7 @@ export default async function ChatLayout({ children }: LayoutProps<"/">) {
         ))}
       </nav>
       <div className="mt-4 space-y-1 border-t border-[var(--border)] pt-3 text-sm">
+        <ThemeToggle showLabel className="w-full" />
         {isAdminEmail(user.email) && (
           <Link href="/admin" className="btn-ghost block">
             Manage library

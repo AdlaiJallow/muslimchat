@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { signIn, signUp, type AuthState } from "./actions";
 
 export default function LoginPage() {
@@ -11,7 +12,8 @@ export default function LoginPage() {
   );
 
   return (
-    <main className="flex min-h-dvh items-center justify-center px-4">
+    <main className="relative flex min-h-dvh items-center justify-center px-4">
+      <ThemeToggle className="absolute end-4 top-4" />
       <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-sm">
         <h1 className="text-xl font-semibold">Library Assistant</h1>
         <p className="mt-1 text-sm text-[var(--muted)]">
