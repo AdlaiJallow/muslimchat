@@ -1,0 +1,10 @@
+node_modules
+.next
+.cache
+.git
+.history
+.env*
+!.env.example
+*.tsbuildinfo
+*.docx
+eval
