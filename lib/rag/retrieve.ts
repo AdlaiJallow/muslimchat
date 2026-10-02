@@ -37,7 +37,7 @@ export interface RetrieveOptions {
  */
 export async function retrieve(query: string, options: RetrieveOptions = {}) {
   const topK = options.topK ?? Number(process.env.RAG_TOP_K ?? 8);
-  const minSimilarity = options.minSimilarity ?? Number(process.env.RAG_MIN_SIMILARITY ?? 0.5);
+  const minSimilarity = options.minSimilarity ?? Number(process.env.RAG_MIN_SIMILARITY ?? 0.45);
 
   const embedding = await embedQuery(query);
   const { data, error } = await createAdminClient().rpc("match_chunks", {
