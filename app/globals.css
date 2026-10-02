@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #1c1917;
+  --panel: #ffffff;
+  --muted: #78716c;
+  --border: #e7e5e4;
+  --accent: #0f766e;
+  --accent-fg: #ffffff;
+  --accent-soft: #ccfbf1;
+  --user-bubble: #f0fdfa;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0c0a09;
+    --foreground: #e7e5e4;
+    --panel: #1c1917;
+    --muted: #a8a29e;
+    --border: #292524;
+    --accent: #2dd4bf;
+    --accent-fg: #042f2e;
+    --accent-soft: #134e4a;
+    --user-bubble: #132322;
+  }
 }
 
 @theme inline {
@@ -12,15 +33,37 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)];
+  }
+  .btn-primary {
+    @apply rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-fg)] transition-opacity hover:opacity-90 disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply rounded-lg px-3 py-1.5 text-sm text-[var(--muted)] transition-colors hover:bg-[var(--border)] hover:text-[var(--foreground)] disabled:opacity-50;
+  }
+  .cite {
+    @apply mx-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--accent-soft)] px-1.5 align-text-top text-[11px] font-semibold text-[var(--foreground)] no-underline hover:bg-[var(--accent)] hover:text-[var(--accent-fg)];
+  }
+}
+
+/* Markdown answers */
+.prose-answer > * + * { margin-top: 0.75em; }
+.prose-answer ul { list-style: disc; padding-left: 1.4em; }
+.prose-answer ol { list-style: decimal; padding-left: 1.4em; }
+.prose-answer li + li { margin-top: 0.25em; }
+.prose-answer h1, .prose-answer h2, .prose-answer h3 { font-weight: 600; }
+.prose-answer h1 { font-size: 1.25em; }
+.prose-answer h2 { font-size: 1.125em; }
+.prose-answer code { font-family: var(--font-geist-mono), monospace; font-size: 0.9em; }
+.prose-answer pre { overflow-x: auto; border-radius: 0.5rem; background: var(--border); padding: 0.75rem; }
+.prose-answer table { width: 100%; border-collapse: collapse; font-size: 0.9em; display: block; overflow-x: auto; }
+.prose-answer th, .prose-answer td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: start; }
+.prose-answer blockquote { border-inline-start: 3px solid var(--border); padding-inline-start: 0.75rem; color: var(--muted); }

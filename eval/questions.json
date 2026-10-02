@@ -1,0 +1,6 @@
+[
+  { "question": "Replace with a question answered by one of your PDFs", "expect": { "title": "part of the document title", "page": 1 } },
+  { "question": "Who won the 2022 FIFA World Cup?" },
+  { "question": "What is the capital of Australia?" },
+  { "question": "Write me a Python function to sort a list." }
+]
