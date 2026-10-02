@@ -1,4 +1,4 @@
-import { answerModel, fastModel, getLlm } from "@/lib/rag/llm";
+import { answerModel, fastModel, getLlm, normalizeCitations, reasoningParams } from "@/lib/rag/llm";
 import {
   buildAnswerMessages,
   buildRewriteMessages,
@@ -15,7 +15,8 @@ export async function standaloneQuery(history: HistoryMessage[], question: strin
       model: fastModel(),
       messages: buildRewriteMessages(history, question),
       temperature: 0,
-      max_tokens: 120,
+      max_tokens: 400, // includes reasoning tokens on reasoning models
+      ...reasoningParams(),
     });
     return res.choices[0]?.message?.content?.trim() || question;
   } catch {
@@ -36,16 +37,16 @@ export async function prepareAnswer(history: HistoryMessage[], question: string)
   };
 }
 
-export const ANSWER_PARAMS = { temperature: 0.2, max_tokens: 1500 } as const;
+export const answerParams = () => ({ temperature: 0.2, max_tokens: 3000, ...reasoningParams() });
 
 export async function answerOnce(history: HistoryMessage[], question: string) {
   const prepared = await prepareAnswer(history, question);
   const res = await getLlm().chat.completions.create({
     model: answerModel(),
     messages: prepared.messages,
-    ...ANSWER_PARAMS,
+    ...answerParams(),
   });
-  return { ...prepared, answer: res.choices[0]?.message?.content ?? "" };
+  return { ...prepared, answer: normalizeCitations(res.choices[0]?.message?.content ?? "") };
 }
 
 /** Citation numbers actually used in an answer, e.g. "[1][3]" → [1, 3]. */

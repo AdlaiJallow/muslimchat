@@ -15,5 +15,16 @@ export function getLlm(): OpenAI {
   return client;
 }
 
-export const answerModel = () => process.env.LLM_MODEL || "llama-3.3-70b-versatile";
-export const fastModel = () => process.env.LLM_FAST_MODEL || "llama-3.1-8b-instant";
+export const answerModel = () => process.env.LLM_MODEL || "openai/gpt-oss-120b";
+export const fastModel = () => process.env.LLM_FAST_MODEL || "openai/gpt-oss-20b";
+
+/** Extra params for reasoning models; empty when LLM_REASONING_EFFORT is unset. */
+export function reasoningParams(): { reasoning_effort?: "low" | "medium" | "high" } {
+  const effort = process.env.LLM_REASONING_EFFORT;
+  return effort === "low" || effort === "medium" || effort === "high" ? { reasoning_effort: effort } : {};
+}
+
+/** Some models (gpt-oss) cite as 【1】; normalize to [1]. Safe per streamed delta. */
+export function normalizeCitations(text: string): string {
+  return text.replace(/【/g, "[").replace(/】/g, "]");
+}

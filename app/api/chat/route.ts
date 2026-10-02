@@ -1,5 +1,5 @@
-import { ANSWER_PARAMS, citedNumbers, prepareAnswer } from "@/lib/rag/answer";
-import { answerModel, getLlm } from "@/lib/rag/llm";
+import { answerParams, citedNumbers, prepareAnswer } from "@/lib/rag/answer";
+import { answerModel, getLlm, normalizeCitations } from "@/lib/rag/llm";
 import type { HistoryMessage } from "@/lib/rag/prompt";
 import { createClient } from "@/lib/supabase/server";
 
@@ -68,11 +68,12 @@ export async function POST(request: Request) {
           model: answerModel(),
           messages: prepared.messages,
           stream: true,
-          ...ANSWER_PARAMS,
+          ...answerParams(),
         });
         for await (const part of completion) {
-          const text = part.choices[0]?.delta?.content;
-          if (text) {
+          const raw = part.choices[0]?.delta?.content;
+          if (raw) {
+            const text = normalizeCitations(raw);
             answer += text;
             send({ type: "delta", text });
           }

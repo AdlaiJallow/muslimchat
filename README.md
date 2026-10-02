@@ -9,7 +9,7 @@ Everything runs on free tiers or open-source models:
 | App | Next.js 16 (App Router), Tailwind |
 | Database, auth, file storage | Supabase (Postgres + pgvector, Storage) |
 | Embeddings | `multilingual-e5-small`, run locally on the CPU (no key) |
-| LLM | Groq free tier (Llama 3.3 70B) through the OpenAI-compatible API, so any compatible endpoint can be swapped in |
+| LLM | Groq free tier (open-weight gpt-oss-120b) through the OpenAI-compatible API, so any compatible endpoint can be swapped in |
 
 ## How it works
 
