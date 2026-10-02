@@ -1,17 +1,28 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
+import { THEME_COOKIE, type Theme } from "@/lib/theme";
 
-// The theme lives on <html data-theme> (set before paint by the layout script);
-// subscribe to that attribute so every toggle on the page stays in sync.
+const darkQuery = () => window.matchMedia("(prefers-color-scheme: dark)");
+
+// The effective theme is <html data-theme> when set (saved choice), else the system
+// setting. Watch both so every toggle on the page stays in sync.
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-  return () => observer.disconnect();
+  const media = darkQuery();
+  media.addEventListener("change", onChange);
+  return () => {
+    observer.disconnect();
+    media.removeEventListener("change", onChange);
+  };
 }
 
-const getTheme = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
+function getTheme(): Theme {
+  const saved = document.documentElement.dataset.theme;
+  if (saved === "light" || saved === "dark") return saved;
+  return darkQuery().matches ? "dark" : "light";
+}
 
 export function ThemeToggle({ className = "", showLabel = false }: { className?: string; showLabel?: boolean }) {
   // null on the server, so the first client render matches the HTML and swaps in after hydration.
@@ -20,11 +31,8 @@ export function ThemeToggle({ className = "", showLabel = false }: { className?:
 
   function toggle() {
     document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, next);
-    } catch {
-      // Storage blocked (private mode): the choice lasts for this page only.
-    }
+    // A cookie (not localStorage) so the server can render the right theme on the next load.
+    document.cookie = `${THEME_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
   }
 
   const label = `Switch to ${next} mode`;

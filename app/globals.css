@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
-/* Theme is set on <html data-theme> by the inline script in app/layout.tsx (saved choice,
-   else the system setting), so Tailwind's dark: variant follows the toggle too. */
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+/* <html data-theme> comes from the "theme" cookie (see app/layout.tsx); without it the
+   system setting applies. Tailwind's dark: variant follows the same rule. */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
+}
 
 :root {
   --background: #fafaf9;
@@ -28,6 +37,22 @@
   --accent-soft: #134e4a;
   --user-bubble: #132322;
   color-scheme: dark;
+}
+
+/* No saved choice: follow the system setting. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: #0c0a09;
+    --foreground: #e7e5e4;
+    --panel: #1c1917;
+    --muted: #a8a29e;
+    --border: #292524;
+    --accent: #2dd4bf;
+    --accent-fg: #042f2e;
+    --accent-soft: #134e4a;
+    --user-bubble: #132322;
+    color-scheme: dark;
+  }
 }
 
 @theme inline {
