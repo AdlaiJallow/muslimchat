@@ -11,10 +11,11 @@ export function isAdminEmail(email: string | null | undefined): boolean {
   return !!email && emailList(process.env.ADMIN_EMAILS).includes(email.toLowerCase());
 }
 
-/** Admins can always sign up; others must be listed in ALLOWED_EMAILS. */
+/** Admins can always sign up; others must be listed in ALLOWED_EMAILS, or it must be "*" (open sign-up). */
 export function isAllowedEmail(email: string): boolean {
   const e = email.toLowerCase();
-  return isAdminEmail(e) || emailList(process.env.ALLOWED_EMAILS).includes(e);
+  const allowed = emailList(process.env.ALLOWED_EMAILS);
+  return isAdminEmail(e) || allowed.includes("*") || allowed.includes(e);
 }
 
 export async function getUser() {

@@ -25,7 +25,7 @@ Everything runs on free tiers or open-source models:
    - `SUPABASE_SECRET_KEY`: Supabase dashboard → Project Settings → API Keys → secret key.
    - `LLM_API_KEY`: a free key from https://console.groq.com/keys.
    - `EMBEDDING_BASE_URL` and `EMBEDDING_API_KEY`: in the Cloudflare dashboard (free account, no card), open **AI → Workers AI → Use REST API**. Copy the account ID into the URL and create a token with Workers AI permission.
-   - `ADMIN_EMAILS`: your email. `ALLOWED_EMAILS`: anyone else you invite.
+   - `ADMIN_EMAILS`: your email. `ALLOWED_EMAILS`: anyone else you invite, or `*` to let anyone sign up.
 2. Install and run:
    ```bash
    npm install
